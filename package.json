@@ -1,0 +1,30 @@
+{
+  "name": "mithril-frp",
+  "version": "1.0.0",
+  "description": "Integrate FRP with Mithril using kefir.js",
+  "main": "",
+  "scripts": {
+    "build": "browserify -t [ babelify --stage 0 --plugins mjsx ] src/index.js -o bundle.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mijime/mithril-frp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mijime/mithril-frp/issues"
+  },
+  "homepage": "https://github.com/mijime/mithril-frp#readme",
+  "dependencies": {
+    "kefir": "^3.0.0",
+    "mithril": "^0.2.0"
+  },
+  "devDependencies": {
+    "babel-plugin-mjsx": "^1.0.3",
+    "babelify": "^6.3.0",
+    "browserify": "^11.2.0"
+  }
+}
