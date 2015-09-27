@@ -6,6 +6,8 @@ Integrate FRP with Mithril using kefir.js
 
 ## Run
 
+    npm install
+    npm run build
     open index.html
 
 ## FRP
