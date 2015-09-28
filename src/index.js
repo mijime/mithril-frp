@@ -1,59 +1,43 @@
-import kefir from 'kefir';
 import m from 'mithril';
-import {EventEmitter} from 'events';
+import {merge, combine} from 'kefir';
 
-function add (prev, next) {
-  return prev + next;
+import KComponent from './utils/component';
+import KEmitter from './utils/emitter';
+
+function add (curr, next) {
+  return curr + next;
 }
 
-function withEmit (emitter) {
-  return (event) => emitter.emit('data', event);
-}
+function mainStream (props, children) {
+  const delay = 1000;
+  const up = new KEmitter();
+  const down = new KEmitter();
+  const text = new KEmitter();
 
-function withEmitAttr (attr, emitter) {
-  return m.withAttr(attr, withEmit(emitter));
-}
-
-function makeModule (viewStream) {
-  const view = m.prop([]);
-  return {
-    controller () {
-      viewStream().onValue((newView) => {
-        m.startComputation();
-        view(newView);
-        m.endComputation();
-      });
-    },
-    view () {
-      return view();
-    },
-  };
-}
-
-function createViewStream () {
-  const up = new EventEmitter();
-  const down = new EventEmitter();
-  const text = new EventEmitter();
-  const counter = kefir.merge([
-    kefir.fromEvents(up, 'data').map(() => 1),
-    kefir.fromEvents(down, 'data').map(() => -1),
+  const counterStream = merge([
+    up.createStream().delay(delay).map(() => 1),
+    down.createStream().delay(delay).map(() => -1),
   ]).scan(add, 0);
 
-  return kefir.combine([
-    counter,
-    kefir.fromEvents(text, 'data').toProperty(() => ''),
-  ], (counter, currentText) => {
+  const textStream = text.createStream().toProperty(() => '').delay(delay);
+
+  const inputStreams = [counterStream, textStream];
+
+  const viewHandler = (currentCounter, currentText) => {
     return (
       <div>
-        <button onclick={withEmit(up)}>up</button>
-        <button onclick={withEmit(down)}>down</button>
-        <span>{counter}</span>
-        <input type='text' oninput={withEmitAttr('value', text)} />
+        <button onclick={up.handleEmit()}>up</button>
+        <button onclick={down.handleEmit()}>down</button>
+        <span>{currentCounter}</span>
+        <input type='text'
+          oninput={m.withAttr('value', text.handleEmit())} />
         <p>{currentText}</p>
+        {children}
       </div>
     );
-  });
+  }
+
+  return combine(inputStreams, viewHandler);
 }
 
-const Root = makeModule(createViewStream);
-m.mount(document.body, (<Root />));
+m.mount(document.body, (<KComponent stream={mainStream} />));
