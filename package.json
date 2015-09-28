@@ -20,7 +20,8 @@
   "homepage": "https://github.com/mijime/mithril-frp#readme",
   "dependencies": {
     "kefir": "^3.0.0",
-    "mithril": "^0.2.0"
+    "mithril": "^0.2.0",
+    "redux": "^3.0.2"
   },
   "devDependencies": {
     "babel-plugin-mjsx": "^1.0.3",
